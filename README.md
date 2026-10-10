@@ -129,3 +129,81 @@ The application comes pre-loaded with 3 rich test datasets so you can test immed
 1. **Global E-Commerce Sales**: 1,000+ orders across 4 continents with profit margins, discounts, customer segments, and regional categories.
 2. **SaaS MRR & Churn Analytics**: Subscription tiers, usage hours, NPS scores, and churn statuses.
 3. **Supply Chain Logistics**: Warehouses, delivery carriers, shipping costs, and defect rates.
+
+The sample data is embedded in [`src/services/sampleDatasets.ts`](src/services/sampleDatasets.ts), so the demo works without an external database or file download.
+
+## 📊 Demo Dataset Download
+For a larger, realistic upload demo, download the public supermarket sales CSV:
+
+**[Download supermarket sales CSV](https://raw.githubusercontent.com/plotly/datasets/master/supermarket_Sales.csv)**
+
+It contains transaction dates, branches, cities, product lines, quantities, revenue, tax, gross income, payment methods, and customer ratings. Upload it through the Dataset Manager, then try questions such as:
+
+- Which product line generates the most revenue?
+- Show total sales by branch and payment method.
+- Show the daily sales trend and forecast the next period.
+- Detect anomalies in gross income.
+- Which product line has the highest average customer rating?
+
+## 🏗️ Architecture Diagram
+The detailed architecture diagram is also available at [`docs/architecture.md`](docs/architecture.md).
+
+```mermaid
+flowchart LR
+    User[User] --> UI[React 19 + Vite UI]
+    UI --> Auth[Firebase Auth]
+    UI --> Parser[CSV Parser and Schema Profiler]
+    Parser --> Engine[In-browser Analytics Engine]
+    Engine --> SQL[SQL Executor]
+    Engine --> Stats[Statistics and Anomaly Detection]
+    Engine --> Forecast[Forecasting Engine]
+    UI --> API[Express API]
+    API --> Cache[LRU Cache and Idempotency]
+    API --> Gemini[Google Gemini]
+    Auth --> Firestore[(Firestore)]
+    UI --> Charts[Charts, Grid, Dashboard, Audit]
+    Engine --> Charts
+```
+
+## 🎥 Screenshots, Video, and Live Demo
+Screenshots can be added manually to [`docs/screenshots/`](docs/screenshots/). The README is prepared for these files:
+
+| View | Screenshot |
+| --- | --- |
+| Authentication gateway | `docs/screenshots/auth-gateway.png` |
+| Analyst workspace | `docs/screenshots/analyst-workspace.png` |
+| Executive dashboard | `docs/screenshots/executive-dashboard.png` |
+| SQL playground | `docs/screenshots/sql-playground.png` |
+
+- **Live app:** [DigitalBackOffice AI](https://digitakbackoffice-ai.vercel.app)
+- **Demo video:** [Google Drive demo](https://drive.google.com/file/d/1UF4kPh6i7OvLflgNcK8KQfxsF2rzNo2n/view?usp=sharing)
+
+## 🐳 Docker Support
+The included multi-stage [`Dockerfile`](Dockerfile) builds the frontend and runs the Express server in a production Node.js image.
+
+```bash
+docker build -t digital-backoffice-ai .
+docker run --rm -p 3000:3000 \
+  -e GEMINI_API_KEY="your_api_key" \
+  digital-backoffice-ai
+```
+
+Open `http://localhost:3000` after the container starts.
+
+## 🔐 Firebase Configuration
+To enable Google authentication, enable the Google provider in Firebase Authentication and add `localhost`, `127.0.0.1`, and `digitakbackoffice-ai.vercel.app` to Authentication → Settings → Authorized domains. Enable Anonymous authentication if you want Firebase-backed demo sessions; the application also includes a local demo fallback.
+
+## ☁️ Deployment
+The project includes [`vercel.json`](vercel.json) for Vercel deployments. The install command uses legacy peer resolution because the current Vite and esbuild versions declare an upstream peer mismatch.
+
+```bash
+npx vercel --prod
+```
+
+## 📁 Repository Deliverables
+- Complete React, TypeScript, Express, Firebase, and analytics source code.
+- Setup, authentication, Docker, deployment, and demo instructions in this README.
+- Mermaid architecture diagram in this README and [`docs/architecture.md`](docs/architecture.md).
+- Screenshot placeholders in [`docs/screenshots/`](docs/screenshots/) for manual image additions.
+- Google Drive demo video and live Vercel app links.
+- Embedded ecommerce, SaaS churn, and supply-chain sample datasets.
