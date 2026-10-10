@@ -1,0 +1,6 @@
+{
+  "name": "InsightPulse AI - Enterprise AI Data Analyst",
+  "description": "Production-ready AI-powered data analyst for multi-CSV analytics, interactive dashboards, SQL & Pandas code generation, statistical anomaly detection, and natural language business intelligence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
