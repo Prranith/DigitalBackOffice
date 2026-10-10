@@ -17,10 +17,15 @@ app.use(express.json({ limit: '50mb' }));
 
 // Health & telemetry endpoint
 app.get('/api/health', (req, res) => {
+  const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   res.json({
     status: 'ok',
     timestamp: Date.now(),
-    geminiConfigured: !!(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY'),
+    geminiConfigured: !!(
+      geminiKey &&
+      geminiKey !== 'MY_GEMINI_API_KEY' &&
+      geminiKey !== 'MY_GOOGLE_API_KEY'
+    ),
     cacheStats: serverCache.getStats(),
   });
 });

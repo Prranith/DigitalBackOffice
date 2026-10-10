@@ -48,6 +48,11 @@ const ANALYTICAL_INTENTS = new Set([
   'evaluate', 'evaluation', 'review', 'examine', 'audit', 'query', 'file', 'csv', 'spreadsheet'
 ]);
 
+const GENERIC_DATASET_ANALYSIS_PATTERNS: RegExp[] = [
+  /\b(analys(e|is|ing)|analyz(e|ed|ing|er)|summari[sz](e|ing|ed)|overview|inspect|explore|profil(e|ing)|audit)\b/,
+  /\b(what(\s+can)?\s+you\s+(find|see|tell|analy[sz]e)|tell\s+me\s+about|insights?)\b/,
+];
+
 // Domain synonyms
 const SYNONYM_MAP: Record<string, string[]> = {
   revenue: ['sales', 'income', 'volume', 'amount', 'turnover', 'earnings', 'price', 'mrr', 'gross'],
@@ -109,9 +114,11 @@ export function performSemanticSearch(query: string, datasets: Dataset[]): Seman
   const rawTokens = tokenize(query);
   const meaningfulTokens = rawTokens.filter(t => !STOP_WORDS.has(t));
   const queryLower = query.toLowerCase();
+  const hasDatasetKeyword = /\b(dataset|data|file|csv|table|sheet)\b/.test(queryLower);
 
   // 1. Check for general analytical questions about this dataset
   const hasAnalyticalIntent = rawTokens.some(t => ANALYTICAL_INTENTS.has(t));
+  const hasGenericAnalysisPhrase = GENERIC_DATASET_ANALYSIS_PATTERNS.some(rx => rx.test(queryLower));
   const isGenericDatasetQuery = 
     queryLower.includes('dataset') || 
     queryLower.includes('this data') || 
@@ -135,7 +142,9 @@ export function performSemanticSearch(query: string, datasets: Dataset[]): Seman
     queryLower.includes('tell me about') ||
     queryLower.includes('what can you') ||
     queryLower.includes('what is in') ||
-    queryLower.includes('what does');
+    queryLower.includes('what does') ||
+    (hasDatasetKeyword && hasGenericAnalysisPhrase) ||
+    (hasGenericAnalysisPhrase && meaningfulTokens.length <= 6);
 
   // 2. Build vocabulary and documents for column search
   const vocabSet = new Set<string>();

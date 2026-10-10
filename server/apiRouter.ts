@@ -3,9 +3,17 @@ import { serverCache } from './cache.js';
 
 let genAIClient: GoogleGenAI | null = null;
 
+function resolveGeminiApiKey(): string | null {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!apiKey || apiKey === 'MY_GEMINI_API_KEY' || apiKey === 'MY_GOOGLE_API_KEY') {
+    return null;
+  }
+  return apiKey;
+}
+
 function getGenAI(): GoogleGenAI | null {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
+  const apiKey = resolveGeminiApiKey();
+  if (!apiKey) {
     return null;
   }
   if (!genAIClient) {

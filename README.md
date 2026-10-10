@@ -104,7 +104,7 @@ npm install
 
 # 2. Configure environment
 cp .env.example .env
-# Ensure GEMINI_API_KEY is defined
+# Ensure GEMINI_API_KEY (or GOOGLE_API_KEY) is defined
 
 # 3. Start development server (Port 3000)
 npm run dev
@@ -121,6 +121,11 @@ npm start
 docker build -t insightpulse-ai .
 docker run -p 3000:3000 -e GEMINI_API_KEY="your_api_key" insightpulse-ai
 ```
+
+### Gemini API Configuration for Export/Deploy
+- The backend uses Gemini via `/api/analyze` and reads either `GEMINI_API_KEY` or `GOOGLE_API_KEY`.
+- Set one of these env vars in your deployment target (Cloud Run, Docker, Render, etc.).
+- Verify after deploy: `GET /api/health` should return `"geminiConfigured": true`.
 
 ---
 

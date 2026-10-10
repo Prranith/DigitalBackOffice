@@ -49,17 +49,19 @@ export async function runAgenticAnalysis(
   callbacks.onProgress?.('Searching semantic vector space for business attributes...');
   await sleep(160);
   const semanticResult: SemanticSearchResult = performSemanticSearch(userQuery, datasets);
+  const forceDatasetAnalysisScope = shouldTreatAsDatasetAnalysisRequest(userQuery, primaryDs);
+  const isDatasetRelated = semanticResult.isRelatedToDataset || forceDatasetAnalysisScope;
 
   emitThought(
     'semantic_search',
     'Semantic Context Retrieval (Vector Space)',
-    semanticResult.isRelatedToDataset
+    isDatasetRelated
       ? `Semantic relevance confirmed (${(semanticResult.relevanceConfidence * 100).toFixed(0)}% confidence). Matched dimensions: ${semanticResult.matchedColumns.map(m => m.columnName).slice(0, 3).join(', ') || semanticResult.targetDimension || 'attributes'}.`
       : `Relevance score below threshold (${(semanticResult.relevanceConfidence * 100).toFixed(0)}%). No corresponding attributes found in '${primaryDs.name}'.`
   );
 
   // GROUND TRUTH ENFORCEMENT: If query is NOT related to the uploaded document, return explicit NOT FOUND!
-  if (!semanticResult.isRelatedToDataset) {
+  if (!isDatasetRelated) {
     callbacks.onProgress?.('Enforcing data governance: query is unrelated to active dataset...');
     await sleep(150);
     emitThought(
@@ -318,4 +320,12 @@ LIMIT 8;`;
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function shouldTreatAsDatasetAnalysisRequest(query: string, dataset: Dataset): boolean {
+  const q = query.toLowerCase();
+  const mentionsDataset = /\b(dataset|data|file|csv|table|records?|rows?|columns?)\b/.test(q);
+  const asksForAnalysis = /\b(analys(e|is|ing)|analyz(e|ed|ing)|summari[sz](e|ing|ed)|overview|insights?|explore|inspect|breakdown|profile)\b/.test(q);
+  const mentionsActiveFile = q.includes((dataset.name || '').toLowerCase()) || q.includes((dataset.fileName || '').toLowerCase());
+  return (mentionsDataset && asksForAnalysis) || mentionsActiveFile;
 }
