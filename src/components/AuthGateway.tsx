@@ -37,6 +37,8 @@ export const AuthGateway: React.FC<AuthGatewayProps> = ({ onAuthenticated }) => 
         setErrorMessage('Sign-in popup was blocked by your browser. Please allow popups or use Enterprise Demo Access.');
       } else if (err.code === 'auth/cancelled-popup-request' || err.code === 'auth/popup-closed-by-user') {
         setErrorMessage('Sign-in popup was closed. Please try again or use Enterprise Demo Access.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setErrorMessage('Google sign-in is not enabled for this host. Add localhost to Firebase Authentication > Settings > Authorized domains, or use Executive Demo Access.');
       } else {
         setErrorMessage(err.message || 'Authentication encountered an error. You can also use Enterprise Demo Access.');
       }
