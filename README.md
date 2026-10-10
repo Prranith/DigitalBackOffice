@@ -175,6 +175,13 @@ Screenshots can be added manually to [`docs/screenshots/`](docs/screenshots/). T
 | Executive dashboard | `docs/screenshots/executive-dashboard.png` |
 | SQL playground | `docs/screenshots/sql-playground.png` |
 
+When the images are added, they can be previewed directly here:
+
+![Authentication gateway](docs/screenshots/auth-gateway.png)
+![Analyst workspace](docs/screenshots/analyst-workspace.png)
+![Executive dashboard](docs/screenshots/executive-dashboard.png)
+![SQL playground](docs/screenshots/sql-playground.png)
+
 - **Live app:** [DigitalBackOffice AI](https://digitakbackoffice-ai.vercel.app)
 - **Demo video:** [Google Drive demo](https://drive.google.com/file/d/1UF4kPh6i7OvLflgNcK8KQfxsF2rzNo2n/view?usp=sharing)
 
