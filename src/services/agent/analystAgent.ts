@@ -48,7 +48,18 @@ export async function runAgenticAnalysis(
   // Phase 2: Semantic Vector Space Retrieval
   callbacks.onProgress?.('Searching semantic vector space for business attributes...');
   await sleep(160);
-  const semanticResult: SemanticSearchResult = performSemanticSearch(userQuery, datasets);
+  let semanticResult: SemanticSearchResult = performSemanticSearch(userQuery, datasets);
+  const forceDatasetScope = isLikelyDatasetExplorationQuery(userQuery);
+
+  if (!semanticResult.isRelatedToDataset && forceDatasetScope) {
+    semanticResult = {
+      ...semanticResult,
+      isRelatedToDataset: true,
+      relevanceConfidence: Math.max(semanticResult.relevanceConfidence || 0, 0.72),
+      intentType: semanticResult.intentType === 'unrelated' ? 'overview' : semanticResult.intentType,
+      unrelatedReason: undefined,
+    };
+  }
 
   emitThought(
     'semantic_search',
@@ -318,4 +329,17 @@ LIMIT 8;`;
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isLikelyDatasetExplorationQuery(query: string): boolean {
+  const lower = query.toLowerCase();
+  return (
+    lower.includes('dataset') ||
+    lower.includes('csv') ||
+    lower.includes('file') ||
+    lower.includes('table') ||
+    lower.includes('column') ||
+    lower.includes('row') ||
+    /\b(analys\w*|analyz\w*|analise\w*|analize\w*|summar\w*|overview|insight\w*|explor\w*|inspect\w*|profil\w*|eda)\b/.test(lower)
+  );
 }

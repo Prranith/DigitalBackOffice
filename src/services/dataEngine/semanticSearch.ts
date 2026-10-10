@@ -135,7 +135,8 @@ export function performSemanticSearch(query: string, datasets: Dataset[]): Seman
     queryLower.includes('tell me about') ||
     queryLower.includes('what can you') ||
     queryLower.includes('what is in') ||
-    queryLower.includes('what does');
+    queryLower.includes('what does') ||
+    /\b(analys\w*|analyz\w*|analise\w*|analize\w*|summar\w*|overview|insight\w*|explor\w*|inspect\w*|profil\w*|eda|breakdown|query|row\w*|column\w*)\b/.test(queryLower);
 
   // 2. Build vocabulary and documents for column search
   const vocabSet = new Set<string>();
